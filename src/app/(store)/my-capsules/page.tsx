@@ -1,7 +1,7 @@
-import { MyCapsulesContent } from "@/components/capsule/MyCapsulesContent";
+import { MyCapsulesContent } from "@/components/capsule/MyCapsulesContent"
+import { fetchCapsules } from "@/actions/capsules/capsule-actions"
 
-export default function MyCapsulesPage() {
-  return (
-    <MyCapsulesContent />
-  )
+export default async function MyCapsulesPage() {
+  const capsules = await fetchCapsules()
+  return <MyCapsulesContent initialCapsules={capsules} />
 }

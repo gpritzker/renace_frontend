@@ -1,24 +1,29 @@
-export const API_URL = process.env.BASE_URL;
-
-const ACCOUNT = {
-    FRIENDS: `${API_URL}/account/friends`,
-    CAPSULES: `${API_URL}/account/capsules`,
-}
-
-const ADDRESS = {
-    CITIES: `${ API_URL}/addresses/cities`,
-    PROVINCES: `${API_URL}/addresses/provinces`,
-}
+export const API_URL = process.env.BASE_URL
 
 const AUTH = {
-    LOGIN: `${API_URL}/user/login`,
-    LOGOUT: `${API_URL}/user/logout`,
+  LOGIN: `${API_URL}/login`,
+  LOGOUT: `${API_URL}/logout`,
+  REGISTER: `${API_URL}/signup`,
+}
+
+const CAPSULES = {
+  LIST: `${API_URL}/api/v1/capsules`,
+  SHOW: (id: number) => `${API_URL}/api/v1/capsules/${id}`,
+  CREATE: `${API_URL}/api/v1/capsules`,
+  UPDATE: (id: number) => `${API_URL}/api/v1/capsules/${id}`,
+  DELETE: (id: number) => `${API_URL}/api/v1/capsules/${id}`,
+}
+
+const MEMORIES = {
+  LIST: `${API_URL}/api/v1/memories`,
+  CREATE: `${API_URL}/api/v1/memories`,
+  SHOW: (id: number) => `${API_URL}/api/v1/memories/${id}`,
+  UPDATE: (id: number) => `${API_URL}/api/v1/memories/${id}`,
+  DELETE: (id: number) => `${API_URL}/api/v1/memories/${id}`,
 }
 
 export const ENDPOINTS = {
-    EXAMPLE: `${API_URL}/NEW`,
-    ACCOUNT,
-    ADDRESS,
-    AUTH
-} as const;
-
+  AUTH,
+  CAPSULES,
+  MEMORIES,
+} as const

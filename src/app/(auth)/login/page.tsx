@@ -22,7 +22,7 @@ export default async function LoginPage() {
             <Link href='/register'>Crear una cuenta</Link>
           </Button>
           <Link
-            href='/recover-password'
+            href='/forgot-password'
             className='inline-block text-sm text-purple-600 hover:text-purple-800 hover:underline'
           >
             ¿Olvidaste tu contraseña?
