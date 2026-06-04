@@ -1,15 +1,9 @@
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 
-interface HeaderServer {
-  Accept: string
-  'Content-Type': string
-  Authorization?: string
-}
-
-export const getHeader = async (): Promise<HeaderServer> => {
+export const getHeader = async (): Promise<Record<string, string>> => {
   const session = await getServerSession(authOptions)
-  const headers: HeaderServer = {
+  const headers: Record<string, string> = {
     Accept: 'application/json',
     'Content-Type': 'application/json',
   }

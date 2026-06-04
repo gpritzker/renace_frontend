@@ -9,7 +9,7 @@ interface FetchError extends Error {
 
 export const fetchProfile = async (): Promise<any> => {
   try {
-    return await httpServer(ENDPOINTS.ACCOUNT.CAPSULES, {
+    return await httpServer(ENDPOINTS.CAPSULES.LIST, {
       method: 'GET'
     })
   } catch (error) {
@@ -29,7 +29,7 @@ export const updateProfile = async (user: any): Promise<any> => {
     }
   }
   try {
-    return await httpServer(ENDPOINTS.ACCOUNT.FRIENDS, {
+    return await httpServer(ENDPOINTS.CAPSULES.LIST, {
       method: 'PATCH',
       body: JSON.stringify(requestBody)
     })

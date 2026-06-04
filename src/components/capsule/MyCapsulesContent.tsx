@@ -18,6 +18,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { toast } from "sonner"
 import { deleteCapsule } from "@/actions/capsules/capsule-actions"
+import { EditCapsuleModal } from "./EditCapsuleModal"
 import type { ICapsule } from "@/interface/ICapsule"
 
 interface Props {
@@ -28,6 +29,7 @@ export const MyCapsulesContent = ({ initialCapsules }: Props) => {
   const router = useRouter()
   const [capsules, setCapsules] = useState(initialCapsules)
   const [searchQuery, setSearchQuery] = useState("")
+  const [editingCapsule, setEditingCapsule] = useState<ICapsule | null>(null)
   const [isPending, startTransition] = useTransition()
 
   const filteredCapsules = capsules.filter((c) =>
@@ -46,8 +48,20 @@ export const MyCapsulesContent = ({ initialCapsules }: Props) => {
     })
   }
 
+  const handleSaved = (updated: ICapsule) => {
+    setCapsules((prev) => prev.map((c) => (c.id === updated.id ? updated : c)))
+  }
+
   return (
     <div className="flex flex-col w-full p-4 max-w-7xl mx-auto">
+      {editingCapsule && (
+        <EditCapsuleModal
+          capsule={editingCapsule}
+          open={!!editingCapsule}
+          onClose={() => setEditingCapsule(null)}
+          onSaved={handleSaved}
+        />
+      )}
       <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-8">
         <div>
           <h1 className="text-3xl font-bold text-gray-800 flex items-center">
@@ -99,7 +113,7 @@ export const MyCapsulesContent = ({ initialCapsules }: Props) => {
           {filteredCapsules.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {filteredCapsules.map((capsule) => (
-                <CapsuleCard key={capsule.id} capsule={capsule} onDelete={handleDelete} />
+                <CapsuleCard key={capsule.id} capsule={capsule} onDelete={handleDelete} onEdit={(id) => setEditingCapsule(capsules.find(c => c.id === id)!)} />
               ))}
             </div>
           ) : (
@@ -111,7 +125,7 @@ export const MyCapsulesContent = ({ initialCapsules }: Props) => {
           {filteredCapsules.length > 0 ? (
             <div className="space-y-4">
               {filteredCapsules.map((capsule) => (
-                <CapsuleRow key={capsule.id} capsule={capsule} onDelete={handleDelete} />
+                <CapsuleRow key={capsule.id} capsule={capsule} onDelete={handleDelete} onEdit={(id) => setEditingCapsule(capsules.find(c => c.id === id)!)} />
               ))}
             </div>
           ) : (
@@ -123,7 +137,7 @@ export const MyCapsulesContent = ({ initialCapsules }: Props) => {
   )
 }
 
-function CapsuleCard({ capsule, onDelete }: { capsule: ICapsule; onDelete: (id: number) => void }) {
+function CapsuleCard({ capsule, onDelete, onEdit }: { capsule: ICapsule; onDelete: (id: number) => void; onEdit: (id: number) => void }) {
   return (
     <div className="bg-white rounded-lg border border-gray-200 overflow-hidden hover:shadow-md transition-shadow duration-100">
       <Link href={`/capsule/${capsule.id}`} className="block">
@@ -133,7 +147,7 @@ function CapsuleCard({ capsule, onDelete }: { capsule: ICapsule; onDelete: (id: 
         <div className="p-5">
           <div className="flex justify-between items-start">
             <h3 className="font-bold text-lg text-gray-800 mb-2">{capsule.title}</h3>
-            <CapsuleMenu capsuleId={capsule.id} onDelete={onDelete} />
+            <CapsuleMenu capsuleId={capsule.id} onDelete={onDelete} onEdit={onEdit} />
           </div>
           <p className="text-gray-600 text-sm mb-4 line-clamp-2">{capsule.description}</p>
           <div className="flex items-center text-xs text-gray-500 mb-2">
@@ -157,7 +171,7 @@ function CapsuleCard({ capsule, onDelete }: { capsule: ICapsule; onDelete: (id: 
   )
 }
 
-function CapsuleRow({ capsule, onDelete }: { capsule: ICapsule; onDelete: (id: number) => void }) {
+function CapsuleRow({ capsule, onDelete, onEdit }: { capsule: ICapsule; onDelete: (id: number) => void; onEdit: (id: number) => void }) {
   return (
     <div className="bg-white rounded-lg border border-gray-200 hover:shadow-sm transition-shadow">
       <div className="flex flex-col md:flex-row md:items-center gap-4 p-4">
@@ -185,14 +199,18 @@ function CapsuleRow({ capsule, onDelete }: { capsule: ICapsule; onDelete: (id: n
           </div>
         </Link>
         <div className="flex items-center gap-2 flex-shrink-0">
-          <CapsuleMenu capsuleId={capsule.id} onDelete={onDelete} />
+          <CapsuleMenu capsuleId={capsule.id} onDelete={onDelete} onEdit={onEdit} />
         </div>
       </div>
     </div>
   )
 }
 
-function CapsuleMenu({ capsuleId, onDelete }: { capsuleId: number; onDelete: (id: number) => void }) {
+function CapsuleMenu({ capsuleId, onDelete, onEdit }: {
+  capsuleId: number
+  onDelete: (id: number) => void
+  onEdit: (id: number) => void
+}) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -202,6 +220,12 @@ function CapsuleMenu({ capsuleId, onDelete }: { capsuleId: number; onDelete: (id
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
+        <DropdownMenuItem
+          className="cursor-pointer"
+          onClick={() => onEdit(capsuleId)}
+        >
+          Editar
+        </DropdownMenuItem>
         <DropdownMenuItem
           className="text-red-600 cursor-pointer"
           onClick={() => onDelete(capsuleId)}
