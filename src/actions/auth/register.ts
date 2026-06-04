@@ -1,7 +1,6 @@
 'use server'
 
 import { ENDPOINTS } from '@/constants/apiEndpoints'
-import { httpServer } from '@/lib/api/httpServer'
 
 export const register = async ({
   email,
@@ -12,14 +11,24 @@ export const register = async ({
   password: string
   passwordConfirmation: string
 }) => {
-  try {
-    return await httpServer(ENDPOINTS.AUTH.REGISTER, {
-      method: 'POST',
-      body: JSON.stringify({
-        user: { email, password, password_confirmation: passwordConfirmation }
-      })
+  const res = await fetch(ENDPOINTS.AUTH.REGISTER, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+    body: JSON.stringify({
+      user: { email, password, password_confirmation: passwordConfirmation }
     })
-  } catch {
-    throw new Error('Error al registrarse')
+  })
+
+  const data = await res.json()
+
+  if (!res.ok) {
+    const message =
+      data.errors?.join(', ') ||
+      data.error ||
+      data.status?.errors?.join(', ') ||
+      'Error al registrarse'
+    throw new Error(message)
   }
+
+  return data
 }

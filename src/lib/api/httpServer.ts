@@ -20,7 +20,11 @@ export const httpServer = async (
   const data = text ? JSON.parse(text) : {}
 
   if (!response.ok) {
-    throw new Error(data.error || 'API request failed')
+    const message =
+      data.error ||
+      (Array.isArray(data.errors) ? data.errors.join(', ') : data.errors) ||
+      'API request failed'
+    throw new Error(message)
   }
 
   return data
