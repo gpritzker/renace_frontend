@@ -9,20 +9,28 @@ export const authOptions: AuthOptions = {
         password: { type: 'password' }
       },
       async authorize(credentials) {
+        const loginUrl = `${process.env.BASE_URL}/login`
+        console.log('[AUTH] BASE_URL:', process.env.BASE_URL)
+        console.log('[AUTH] Login URL:', loginUrl)
         try {
-          const res = await fetch(`${process.env.BASE_URL}/login`, {
+          const res = await fetch(loginUrl, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
               user: { email: credentials?.email, password: credentials?.password }
             })
           })
+          console.log('[AUTH] Response status:', res.status)
           const data = await res.json()
+          console.log('[AUTH] Response keys:', Object.keys(data))
+          console.log('[AUTH] Has token:', !!data.token, '| res.ok:', res.ok)
           if (res.ok && data.token) {
             return { id: String(data.data.id), email: data.data.email, accessToken: data.token }
           }
+          console.error('[AUTH] Login failed - data:', JSON.stringify(data))
           return null
-        } catch {
+        } catch (e) {
+          console.error('[AUTH] Exception:', e)
           return null
         }
       }

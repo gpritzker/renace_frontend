@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic'
+
 import { MyCapsulesContent } from "@/components/capsule/MyCapsulesContent"
 import { fetchCapsules } from "@/actions/capsules/capsule-actions"
 

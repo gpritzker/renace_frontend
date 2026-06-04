@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic'
+
 import { VoiceProfileClient } from '@/components/voice/VoiceProfileClient'
 import { fetchVoiceProfile } from '@/actions/voice/voice-actions'
 
