@@ -144,11 +144,15 @@ function CapsuleCard({ capsule, onDelete, onEdit }: { capsule: ICapsule; onDelet
         <div className="h-40 bg-gradient-to-r from-purple-50 to-cyan-50 flex items-center justify-center p-4">
           <TimeCapsule className="h-16 w-16 text-purple-500 opacity-50" />
         </div>
-        <div className="p-5">
-          <div className="flex justify-between items-start">
-            <h3 className="font-bold text-lg text-gray-800 mb-2">{capsule.title}</h3>
-            <CapsuleMenu capsuleId={capsule.id} onDelete={onDelete} onEdit={onEdit} />
-          </div>
+      </Link>
+      <div className="p-5">
+        <div className="flex justify-between items-start">
+          <Link href={`/capsule/${capsule.id}`} className="flex-1 min-w-0">
+            <h3 className="font-bold text-lg text-gray-800 mb-2 hover:text-purple-600 transition-colors">{capsule.title}</h3>
+          </Link>
+          <CapsuleMenu capsuleId={capsule.id} onDelete={onDelete} onEdit={onEdit} />
+        </div>
+        <Link href={`/capsule/${capsule.id}`} className="block">
           <p className="text-gray-600 text-sm mb-4 line-clamp-2">{capsule.description}</p>
           <div className="flex items-center text-xs text-gray-500 mb-2">
             <Calendar className="h-3 w-3 mr-1" />
@@ -165,8 +169,8 @@ function CapsuleCard({ capsule, onDelete, onEdit }: { capsule: ICapsule; onDelet
               Pendiente de aprobación
             </span>
           )}
-        </div>
-      </Link>
+        </Link>
+      </div>
     </div>
   )
 }
