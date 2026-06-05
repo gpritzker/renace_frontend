@@ -6,14 +6,14 @@ const steps = [
   {
     id: 1,
     title: 'Grabá tu mensaje',
-    description: 'De voz, video o texto, lo que quieras dejarles.',
+    description: 'Creá una cápsula con un mensaje para que tus seres queridos lo escuchen con tu voz de IA.',
     icon: <Mic className='size-6 text-gray-800' />,
     href: '/create-capsule'
   },
   {
     id: 2,
-    title: 'Guardalo en tu cápsula',
-    description: 'Privado, seguro y solo accesible cuando vos lo decidás.',
+    title: 'Revisa tus cápsulas - Mis cápsulas',
+    description: 'Revisá y administrá todas tus cápsulas guardadas.',
     icon: <Heart className='size-6 text-red-800' />,
     href: '/my-capsules'
   },

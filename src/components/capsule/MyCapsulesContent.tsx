@@ -199,6 +199,11 @@ function CapsuleRow({ capsule, onDelete, onEdit }: { capsule: ICapsule; onDelete
                   Apertura: {new Date(capsule.open_at).toLocaleDateString("es-AR")}
                 </div>
               )}
+              {!capsule.approved && (
+                <span className="text-xs text-amber-600 bg-amber-50 px-2 py-0.5 rounded-full">
+                  Pendiente de aprobación
+                </span>
+              )}
             </div>
           </div>
         </Link>
