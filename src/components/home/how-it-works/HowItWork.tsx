@@ -1,6 +1,6 @@
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
-import { Mic, FlaskConical, Share2, Bot, Lock, Heart, ChevronDown, Play } from 'lucide-react'
+import { Mic, FlaskConical, Share2, Bot, Lock, Heart, ChevronDown } from 'lucide-react'
 
 const steps = [
   {
@@ -117,15 +117,14 @@ export const HowItWorks = () => {
       {/* Video placeholder */}
       <section className='bg-white py-16 px-6'>
         <div className='max-w-3xl mx-auto'>
-          <div className='relative rounded-2xl overflow-hidden bg-gradient-to-br from-purple-900 to-cyan-900 aspect-video flex items-center justify-center shadow-2xl'>
-            <div className='text-center text-white space-y-4'>
-              <div className='w-20 h-20 rounded-full bg-white/20 flex items-center justify-center mx-auto backdrop-blur-sm border border-white/30 cursor-pointer hover:bg-white/30 transition-colors'>
-                <Play className='w-8 h-8 text-white ml-1' />
-              </div>
-              <p className='text-lg font-medium opacity-90'>Ver demo de Renace</p>
-              <p className='text-sm opacity-60'>2 minutos · Subtítulos en español</p>
-            </div>
-            <div className='absolute inset-0 bg-[radial-gradient(ellipse_at_center,_transparent_40%,_rgba(0,0,0,0.4)_100%)]' />
+          <div className='relative rounded-2xl overflow-hidden shadow-2xl aspect-video bg-black'>
+            <video
+              className='w-full h-full object-cover'
+              controls
+              playsInline
+            >
+              <source src='/videos/demo.mp4' type='video/mp4' />
+            </video>
           </div>
           <p className='text-center text-sm text-gray-400 mt-4'>Mirá cómo Gonzalo creó su primera cápsula para su hijo Milo</p>
         </div>
