@@ -12,6 +12,7 @@ import {
   Clock,
   MoreHorizontal,
   Filter,
+  Share2,
 } from "lucide-react"
 import { Input } from "@/components/ui/input"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
@@ -150,7 +151,7 @@ function CapsuleCard({ capsule, onDelete, onEdit }: { capsule: ICapsule; onDelet
           <Link href={`/capsule/${capsule.id}`} className="flex-1 min-w-0">
             <h3 className="font-bold text-lg text-gray-800 mb-2 hover:text-purple-600 transition-colors">{capsule.title}</h3>
           </Link>
-          <CapsuleMenu capsuleId={capsule.id} onDelete={onDelete} onEdit={onEdit} />
+          <CapsuleMenu capsuleId={capsule.id} approved={capsule.approved} onDelete={onDelete} onEdit={onEdit} />
         </div>
         <Link href={`/capsule/${capsule.id}`} className="block">
           <p className="text-gray-600 text-sm mb-4 line-clamp-2">{capsule.description}</p>
@@ -208,18 +209,25 @@ function CapsuleRow({ capsule, onDelete, onEdit }: { capsule: ICapsule; onDelete
           </div>
         </Link>
         <div className="flex items-center gap-2 flex-shrink-0">
-          <CapsuleMenu capsuleId={capsule.id} onDelete={onDelete} onEdit={onEdit} />
+          <CapsuleMenu capsuleId={capsule.id} approved={capsule.approved} onDelete={onDelete} onEdit={onEdit} />
         </div>
       </div>
     </div>
   )
 }
 
-function CapsuleMenu({ capsuleId, onDelete, onEdit }: {
+function CapsuleMenu({ capsuleId, approved, onDelete, onEdit }: {
   capsuleId: number
+  approved: boolean
   onDelete: (id: number) => void
   onEdit: (id: number) => void
 }) {
+  const handleShare = () => {
+    const url = `${window.location.origin}/capsule/${capsuleId}`
+    navigator.clipboard.writeText(url)
+    toast.success('Link copiado al portapapeles')
+  }
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -229,16 +237,16 @@ function CapsuleMenu({ capsuleId, onDelete, onEdit }: {
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
-        <DropdownMenuItem
-          className="cursor-pointer"
-          onClick={() => onEdit(capsuleId)}
-        >
+        {approved && (
+          <DropdownMenuItem className="cursor-pointer gap-2" onClick={handleShare}>
+            <Share2 className="h-4 w-4" />
+            Compartir link
+          </DropdownMenuItem>
+        )}
+        <DropdownMenuItem className="cursor-pointer" onClick={() => onEdit(capsuleId)}>
           Editar
         </DropdownMenuItem>
-        <DropdownMenuItem
-          className="text-red-600 cursor-pointer"
-          onClick={() => onDelete(capsuleId)}
-        >
+        <DropdownMenuItem className="text-red-600 cursor-pointer" onClick={() => onDelete(capsuleId)}>
           Eliminar
         </DropdownMenuItem>
       </DropdownMenuContent>
