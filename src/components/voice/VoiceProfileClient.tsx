@@ -78,8 +78,15 @@ export const VoiceProfileClient = ({ initialProfile }: { initialProfile: Profile
           <h2 className='font-semibold text-gray-800'>Muestras de voz</h2>
           <p className='text-sm text-gray-500'>
             Grabá al menos 1 minuto de audio. Cuanto más natural y variado sea, mejor será el clon.
-            Ideal: contá anécdotas, describí recuerdos, hablá de temas que te gusten.
+            Si no sabés qué decir, usá el texto de ejemplo de abajo.
           </p>
+          <div className='bg-amber-50 border border-amber-200 rounded-xl p-4 text-sm text-amber-900 leading-relaxed'>
+            <p className='font-semibold mb-2 text-amber-700'>Texto sugerido para grabar (El Principito):</p>
+            <p>
+              "Cuando yo tenía seis años vi en un libro sobre la selva virgen que se llamaba 'Historias vividas', una magnífica lámina. Representaba una serpiente boa que se tragaba a una fiera. En el libro se afirmaba: 'Las serpientes boas se tragan su presa entera, sin masticarla. Luego ya no pueden moverse y duermen los seis meses que dura su digestión'.
+              Reflexioné mucho en ese entonces sobre las aventuras de la jungla y logré trazar, con un lápiz de colores, mi primer dibujo. Mi dibujo número 1. Era así. Mostré mi obra de arte a las personas mayores y les pregunté si mi dibujo les daba miedo. Me contestaron: '¿Por qué habría de asustar un sombrero?' Mi dibujo no representaba un sombrero. Representaba una serpiente boa que digería un elefante."
+            </p>
+          </div>
           <VoiceRecorder onUploaded={refresh} />
         </div>
       )}
