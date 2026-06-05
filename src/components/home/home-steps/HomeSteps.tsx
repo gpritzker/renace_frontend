@@ -8,7 +8,7 @@ const steps = [
     title: 'Grabá tu mensaje',
     description: 'De voz, video o texto, lo que quieras dejarles.',
     icon: <Mic className='size-6 text-gray-800' />,
-    href: '/my-voice'
+    href: '/create-capsule'
   },
   {
     id: 2,

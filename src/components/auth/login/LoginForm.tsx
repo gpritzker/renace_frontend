@@ -54,6 +54,7 @@ export default function LoginForm() {
         return
       }
       router.push('/')
+      router.refresh()
     } catch (e) {
       console.log(e)
     }
