@@ -25,8 +25,12 @@ export const uploadVoiceSample = async (formData: FormData) => {
     body: formData
   })
   if (!res.ok) {
-    const data = await res.json()
-    throw new Error(data.errors?.join(', ') || 'Error al subir la muestra')
+    let message = 'Error al subir la muestra'
+    try {
+      const data = await res.json()
+      message = data.errors?.join(', ') || data.error || message
+    } catch {}
+    throw new Error(message)
   }
   return res.json()
 }
