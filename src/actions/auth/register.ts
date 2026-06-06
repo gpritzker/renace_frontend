@@ -6,16 +6,35 @@ export const register = async ({
   email,
   password,
   passwordConfirmation,
+  firstName,
+  lastName,
+  dni,
+  birthDate,
+  phone,
 }: {
   email: string
   password: string
   passwordConfirmation: string
+  firstName: string
+  lastName: string
+  dni?: string
+  birthDate?: string
+  phone?: string
 }) => {
   const res = await fetch(ENDPOINTS.AUTH.REGISTER, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
     body: JSON.stringify({
-      user: { email, password, password_confirmation: passwordConfirmation }
+      user: {
+        email,
+        password,
+        password_confirmation: passwordConfirmation,
+        first_name: firstName,
+        last_name: lastName,
+        dni,
+        birth_date: birthDate,
+        phone,
+      }
     })
   })
 

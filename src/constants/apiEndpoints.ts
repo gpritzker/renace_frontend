@@ -22,8 +22,14 @@ const MEMORIES = {
   DELETE: (id: number) => `${API_URL}/api/v1/memories/${id}`,
 }
 
+const PROFILE = {
+  SHOW: `${API_URL}/api/v1/profile`,
+  UPDATE: `${API_URL}/api/v1/profile`,
+}
+
 export const ENDPOINTS = {
   AUTH,
   CAPSULES,
   MEMORIES,
+  PROFILE,
 } as const

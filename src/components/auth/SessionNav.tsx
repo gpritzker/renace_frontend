@@ -18,6 +18,7 @@ import { notifyBackendLogout } from '@/actions/auth/login'
 const accountRoutes = [
   { link: '/my-capsules', title: 'Mis Cápsulas' },
   { link: '/my-voice', title: 'Mi Voz' },
+  { link: '/my-profile', title: 'Mi Perfil' },
 ]
 
 export const SessionNav = () => {

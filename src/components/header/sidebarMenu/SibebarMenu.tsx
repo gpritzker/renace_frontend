@@ -23,6 +23,7 @@ const authMenu = [
   { slug: null, title: 'Crear cápsula', url: '/create-capsule', order: 1, childs: [] },
   { slug: null, title: 'Mis cápsulas', url: '/my-capsules', order: 2, childs: [] },
   { slug: null, title: 'Mi voz', url: '/my-voice', order: 3, childs: [] },
+  { slug: null, title: 'Mi perfil', url: '/my-profile', order: 4, childs: [] },
 ]
 
 export const SidebarMenu = async () => {

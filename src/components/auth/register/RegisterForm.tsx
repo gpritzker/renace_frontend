@@ -20,7 +20,12 @@ import { register } from '@/actions/auth/register'
 
 const FormSchema = z
   .object({
-    email: z.string().email({ message: 'Ingrese un email válido.' }),
+    firstName: z.string().min(2, { message: 'Ingresá tu nombre.' }),
+    lastName: z.string().min(2, { message: 'Ingresá tu apellido.' }),
+    dni: z.string().min(7, { message: 'DNI inválido.' }).optional().or(z.literal('')),
+    birthDate: z.string().optional().or(z.literal('')),
+    phone: z.string().min(6, { message: 'Teléfono inválido.' }).optional().or(z.literal('')),
+    email: z.string().email({ message: 'Ingresá un email válido.' }),
     password: z.string().min(6, { message: 'La contraseña debe tener al menos 6 caracteres.' }),
     passwordConfirmation: z.string()
   })
@@ -38,7 +43,16 @@ export const RegisterForm = () => {
 
   const form = useForm<FormData>({
     resolver: zodResolver(FormSchema),
-    defaultValues: { email: '', password: '', passwordConfirmation: '' }
+    defaultValues: {
+      firstName: '',
+      lastName: '',
+      dni: '',
+      birthDate: '',
+      phone: '',
+      email: '',
+      password: '',
+      passwordConfirmation: ''
+    }
   })
 
   const handleSubmit = async (data: FormData) => {
@@ -46,7 +60,12 @@ export const RegisterForm = () => {
       await register({
         email: data.email,
         password: data.password,
-        passwordConfirmation: data.passwordConfirmation
+        passwordConfirmation: data.passwordConfirmation,
+        firstName: data.firstName,
+        lastName: data.lastName,
+        dni: data.dni || undefined,
+        birthDate: data.birthDate || undefined,
+        phone: data.phone || undefined,
       })
       setSuccess(true)
     } catch (e: any) {
@@ -72,67 +91,125 @@ export const RegisterForm = () => {
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(handleSubmit)}
-        className='flex flex-col items-center justify-center text-gray-900 w-full gap-y-6'
+        className='flex flex-col items-center justify-center text-gray-900 w-full gap-y-5'
       >
+        <div className='grid grid-cols-1 sm:grid-cols-2 gap-4 w-full'>
+          <FormField
+            control={form.control}
+            name='firstName'
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Nombre *</FormLabel>
+                <FormControl>
+                  <Input onFocus={() => setError(null)} placeholder='Juan' {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name='lastName'
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Apellido *</FormLabel>
+                <FormControl>
+                  <Input onFocus={() => setError(null)} placeholder='Pérez' {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name='dni'
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>DNI</FormLabel>
+                <FormControl>
+                  <Input onFocus={() => setError(null)} placeholder='12345678' {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name='birthDate'
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Fecha de nacimiento</FormLabel>
+                <FormControl>
+                  <Input onFocus={() => setError(null)} type='date' {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </div>
+
+        <FormField
+          control={form.control}
+          name='phone'
+          render={({ field }) => (
+            <FormItem className='w-full'>
+              <FormLabel>Teléfono</FormLabel>
+              <FormControl>
+                <Input onFocus={() => setError(null)} placeholder='+54 11 1234-5678' {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
         <FormField
           control={form.control}
           name='email'
           render={({ field }) => (
             <FormItem className='w-full'>
-              <FormLabel>E-mail</FormLabel>
+              <FormLabel>E-mail *</FormLabel>
               <FormControl>
-                <Input
-                  onFocus={() => setError(null)}
-                  className='text-black w-full'
-                  type='email'
-                  {...field}
-                />
+                <Input onFocus={() => setError(null)} type='email' {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
           )}
         />
-        <FormField
-          control={form.control}
-          name='password'
-          render={({ field }) => (
-            <FormItem className='w-full'>
-              <FormLabel>Contraseña</FormLabel>
-              <FormControl>
-                <Input
-                  onFocus={() => setError(null)}
-                  className='text-black'
-                  type='password'
-                  {...field}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name='passwordConfirmation'
-          render={({ field }) => (
-            <FormItem className='w-full'>
-              <FormLabel>Confirmar contraseña</FormLabel>
-              <FormControl>
-                <Input
-                  onFocus={() => setError(null)}
-                  className='text-black'
-                  type='password'
-                  {...field}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+
+        <div className='grid grid-cols-1 sm:grid-cols-2 gap-4 w-full'>
+          <FormField
+            control={form.control}
+            name='password'
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Contraseña *</FormLabel>
+                <FormControl>
+                  <Input onFocus={() => setError(null)} type='password' {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name='passwordConfirmation'
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Confirmar contraseña *</FormLabel>
+                <FormControl>
+                  <Input onFocus={() => setError(null)} type='password' {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </div>
+
         <ErrorAlert error={error} />
         <Button
           type='submit'
           className='hover:bg-purple-300 w-full cursor-pointer'
-          disabled={form.formState.isSubmitting || !form.formState.isValid}
+          disabled={form.formState.isSubmitting}
         >
           {form.formState.isSubmitting ? 'Registrando...' : 'Crear cuenta'}
         </Button>
