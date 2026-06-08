@@ -41,7 +41,7 @@ export const EditCapsuleModal = ({ capsule, open, onClose, onSaved }: Props) => 
       const updated = await updateCapsule(capsule.id, {
         title,
         description,
-        ...(openAt ? { open_at: openAt } : {})
+        open_at: openAt || null
       })
       toast.success('Cápsula actualizada')
       onSaved(updated)

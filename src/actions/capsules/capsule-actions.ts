@@ -22,7 +22,7 @@ export const createCapsule = async (payload: {
 
 export const updateCapsule = async (
   id: number,
-  payload: { title?: string; description?: string; open_at?: string }
+  payload: { title?: string; description?: string; open_at?: string | null; recipient_email?: string }
 ): Promise<ICapsule> => {
   return httpServer(ENDPOINTS.CAPSULES.UPDATE(id), {
     method: 'PATCH',
