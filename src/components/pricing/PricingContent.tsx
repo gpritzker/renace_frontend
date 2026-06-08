@@ -76,9 +76,10 @@ const plans = [
 interface Props {
   isLoggedIn: boolean
   isPremium: boolean
+  userEmail?: string | null
 }
 
-export const PricingContent = ({ isLoggedIn, isPremium }: Props) => {
+export const PricingContent = ({ isLoggedIn, isPremium, userEmail }: Props) => {
   const router = useRouter()
   const [loading, setLoading] = useState<string | null>(null)
 
@@ -88,7 +89,10 @@ export const PricingContent = ({ isLoggedIn, isPremium }: Props) => {
       return
     }
     if (!plan.planId) return
-    window.location.href = plan.planId
+    const url = userEmail
+      ? `${plan.planId}&payer_email=${encodeURIComponent(userEmail)}`
+      : plan.planId
+    window.location.href = url
   }
 
   const handleCancel = async () => {
