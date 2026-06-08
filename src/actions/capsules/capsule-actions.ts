@@ -12,6 +12,7 @@ export const createCapsule = async (payload: {
   title: string
   description: string
   open_at?: string
+  recipient_email?: string
 }): Promise<ICapsule> => {
   return httpServer(ENDPOINTS.CAPSULES.CREATE, {
     method: 'POST',

@@ -12,6 +12,7 @@ export interface IUserProfile {
   dni: string | null
   birth_date: string | null
   phone: string | null
+  premium: boolean | null
   created_at: string
 }
 

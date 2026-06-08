@@ -9,7 +9,7 @@ import {
   DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu'
 import { FiUser } from 'react-icons/fi'
-import { LogOut, KeyRound, Pill, Settings } from 'lucide-react'
+import { LogOut, KeyRound, Pill, Settings, Crown } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import Link from 'next/link'
 import { useSession, signOut } from 'next-auth/react'
@@ -36,6 +36,13 @@ export const SessionNav = () => {
         <Link href='/how-it-works'>
           <Settings className='size-6' />
           Cómo funciona
+        </Link>
+      </Button>
+
+      <Button className='hidden md:flex' variant='ghost' type='button' asChild>
+        <Link href='/pricing'>
+          <Crown className='size-5' />
+          Planes
         </Link>
       </Button>
 

@@ -14,8 +14,9 @@ import { authOptions } from '@/lib/auth'
 
 const guestMenu = [
   { slug: null, title: 'Cómo funciona', url: '/how-it-works', order: 0, childs: [] },
-  { slug: null, title: 'Iniciar sesión', url: '/login', order: 1, childs: [] },
-  { slug: null, title: 'Registro', url: '/register', order: 2, childs: [] }
+  { slug: null, title: 'Planes', url: '/pricing', order: 1, childs: [] },
+  { slug: null, title: 'Iniciar sesión', url: '/login', order: 2, childs: [] },
+  { slug: null, title: 'Registro', url: '/register', order: 3, childs: [] }
 ]
 
 const authMenu = [
@@ -24,6 +25,7 @@ const authMenu = [
   { slug: null, title: 'Mis cápsulas', url: '/my-capsules', order: 2, childs: [] },
   { slug: null, title: 'Mi voz', url: '/my-voice', order: 3, childs: [] },
   { slug: null, title: 'Mi perfil', url: '/my-profile', order: 4, childs: [] },
+  { slug: null, title: 'Planes', url: '/pricing', order: 5, childs: [] },
 ]
 
 export const SidebarMenu = async () => {
@@ -42,7 +44,7 @@ export const SidebarMenu = async () => {
           <SheetTitle>Renace</SheetTitle>
           <SheetDescription>Menú de navegación</SheetDescription>
         </SheetHeader>
-        <NavMobile menu={menu} />
+        <NavMobile menu={menu} isLoggedIn={!!session} />
       </SheetContent>
     </Sheet>
   )
