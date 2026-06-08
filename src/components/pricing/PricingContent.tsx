@@ -5,12 +5,12 @@ import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { Check, X, Zap, Heart, Users, Crown, ShieldCheck } from 'lucide-react'
-import { createCheckoutSession, cancelSubscription } from '@/actions/billing/billing-actions'
+import { cancelSubscription } from '@/actions/billing/billing-actions'
 import { toast } from 'sonner'
 
-const PLAN_IDS = {
-  personal: process.env.NEXT_PUBLIC_MP_PLAN_PERSONAL ?? '',
-  familia: process.env.NEXT_PUBLIC_MP_PLAN_FAMILIA ?? '',
+const PLAN_URLS = {
+  personal: process.env.NEXT_PUBLIC_MP_URL_PERSONAL ?? '',
+  familia: process.env.NEXT_PUBLIC_MP_URL_FAMILIA ?? '',
 }
 
 const plans = [
@@ -35,7 +35,7 @@ const plans = [
   },
   {
     id: 'personal',
-    planId: PLAN_IDS.personal,
+    planId: PLAN_URLS.personal,
     name: 'Personal',
     price: 'USD 6',
     period: 'por mes',
@@ -54,7 +54,7 @@ const plans = [
   },
   {
     id: 'familia',
-    planId: PLAN_IDS.familia,
+    planId: PLAN_URLS.familia,
     name: 'Familia',
     price: 'USD 12',
     period: 'por mes',
@@ -82,21 +82,13 @@ export const PricingContent = ({ isLoggedIn, isPremium }: Props) => {
   const router = useRouter()
   const [loading, setLoading] = useState<string | null>(null)
 
-  const handleSubscribe = async (plan: typeof plans[0]) => {
+  const handleSubscribe = (plan: typeof plans[0]) => {
     if (!isLoggedIn) {
       router.push('/register')
       return
     }
     if (!plan.planId) return
-    setLoading(plan.id)
-    try {
-      const url = await createCheckoutSession(plan.planId)
-      window.location.href = url
-    } catch (e: any) {
-      toast.error(e.message || 'Error al iniciar el pago')
-    } finally {
-      setLoading(null)
-    }
+    window.location.href = plan.planId
   }
 
   const handleCancel = async () => {
@@ -197,9 +189,8 @@ export const PricingContent = ({ isLoggedIn, isPremium }: Props) => {
                       ? 'bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 shadow-lg shadow-purple-100'
                       : 'bg-gradient-to-r from-cyan-500 to-cyan-600 hover:from-cyan-600 hover:to-cyan-700'}`}
                   onClick={() => handleSubscribe(plan)}
-                  disabled={!!loading}
                 >
-                  {loading === plan.id ? 'Redirigiendo a MercadoPago...' : `Suscribirse · ${plan.price}/mes`}
+                  {`Suscribirse · ${plan.price}/mes`}
                 </Button>
               )}
             </div>
