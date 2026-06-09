@@ -222,6 +222,8 @@ function CapsuleMenu({ capsuleId, approved, onDelete, onEdit }: {
   onDelete: (id: number) => void
   onEdit: (id: number) => void
 }) {
+  const router = useRouter()
+
   const handleShare = () => {
     const url = `${window.location.origin}/capsule/${capsuleId}`
     navigator.clipboard.writeText(url)
@@ -243,6 +245,9 @@ function CapsuleMenu({ capsuleId, approved, onDelete, onEdit }: {
             Compartir link
           </DropdownMenuItem>
         )}
+        <DropdownMenuItem className="cursor-pointer" onClick={() => router.push(`/my-capsules/${capsuleId}`)}>
+          Gestionar memorias
+        </DropdownMenuItem>
         <DropdownMenuItem className="cursor-pointer" onClick={() => onEdit(capsuleId)}>
           Editar
         </DropdownMenuItem>

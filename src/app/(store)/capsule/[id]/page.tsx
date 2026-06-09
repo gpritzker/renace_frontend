@@ -2,7 +2,7 @@ import { CapsuleExperience } from '@/components/conversation/CapsuleExperience'
 import { FolderClockIcon as TimeCapsule, Calendar, Lock } from 'lucide-react'
 import { notFound } from 'next/navigation'
 
-interface Memory { id: number; content: string }
+interface MediaMemory { id: number; memory_type: 'image' | 'video' | 'audio'; url: string | null }
 interface PublicCapsule {
   id: number
   title: string
@@ -10,13 +10,13 @@ interface PublicCapsule {
   open_at: string | null
   has_voice: boolean
   owner_name: string
-  memories: Memory[]
+  media_memories: MediaMemory[]
 }
 
 async function fetchPublicCapsule(id: string): Promise<PublicCapsule | null> {
   const res = await fetch(`${process.env.BASE_URL}/api/v1/public/capsules/${id}`, {
     headers: { Accept: 'application/json' },
-    next: { revalidate: 60 }
+    cache: 'no-store'
   })
   if (!res.ok) return null
   return res.json()

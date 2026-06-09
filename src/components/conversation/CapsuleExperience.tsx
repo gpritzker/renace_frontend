@@ -4,14 +4,14 @@ import { useState, useRef } from 'react'
 import { CapsuleChat } from './CapsuleChat'
 import { Play, Square, Loader2, MessageCircle } from 'lucide-react'
 
-interface Memory { id: number; content: string }
+interface MediaMemory { id: number; memory_type: 'image' | 'video' | 'audio'; url: string | null }
 interface Capsule {
   id: number
   title: string
   description: string
   has_voice: boolean
   owner_name: string
-  memories: Memory[]
+  media_memories: MediaMemory[]
 }
 
 export const CapsuleExperience = ({ capsule }: { capsule: Capsule }) => {
@@ -20,11 +20,7 @@ export const CapsuleExperience = ({ capsule }: { capsule: Capsule }) => {
   const audioRef = useRef<HTMLAudioElement | null>(null)
   const chatRef = useRef<HTMLDivElement>(null)
 
-  // Arma el texto completo: descripción + memorias
-  const fullText = [
-    capsule.description,
-    ...capsule.memories.map((m) => m.content)
-  ].filter(Boolean).join('. ')
+  const mediaMemories = capsule.media_memories ?? []
 
   const handlePlay = async () => {
     if (audioState === 'playing') {
@@ -38,7 +34,7 @@ export const CapsuleExperience = ({ capsule }: { capsule: Capsule }) => {
       const res = await fetch(`/api/capsule/${capsule.id}/narrate`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ text: fullText })
+        body: JSON.stringify({ text: capsule.description })
       })
       if (!res.ok) throw new Error()
 
@@ -60,17 +56,12 @@ export const CapsuleExperience = ({ capsule }: { capsule: Capsule }) => {
   return (
     <div className='space-y-8'>
 
-      {/* Tarjeta del recuerdo con botón de voz */}
+      {/* Tarjeta del mensaje con botón de voz */}
       <div className='bg-white rounded-2xl border border-gray-200 overflow-hidden shadow-sm'>
-        {/* Descripción / contenido */}
         <div className='p-6'>
           <p className='text-gray-700 leading-relaxed text-base'>{capsule.description}</p>
-          {capsule.memories.map((m) => (
-            <p key={m.id} className='mt-3 text-gray-700 leading-relaxed text-base'>{m.content}</p>
-          ))}
         </div>
 
-        {/* Barra inferior con botón de escuchar */}
         {capsule.has_voice && (
           <div className='border-t border-gray-100 px-6 py-4 bg-purple-50 flex items-center gap-4'>
             <button
@@ -90,7 +81,31 @@ export const CapsuleExperience = ({ capsule }: { capsule: Capsule }) => {
         )}
       </div>
 
-      {/* Chat — aparece después de escuchar o con botón para saltear */}
+      {/* Fotos, videos y audios */}
+      {mediaMemories.length > 0 && (
+        <section className='space-y-3'>
+          <h2 className='text-sm font-medium text-gray-500 uppercase tracking-wide'>Recuerdos</h2>
+          <div className='grid grid-cols-2 gap-3'>
+            {mediaMemories.map((m) => (
+              <div key={m.id} className='rounded-xl overflow-hidden border border-gray-100 bg-gray-50'>
+                {m.memory_type === 'image' && m.url && (
+                  <img src={m.url} alt="" className='w-full aspect-square object-cover' />
+                )}
+                {m.memory_type === 'video' && m.url && (
+                  <video src={m.url} controls className='w-full' />
+                )}
+                {m.memory_type === 'audio' && m.url && (
+                  <div className='p-4'>
+                    <audio src={m.url} controls className='w-full' />
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {/* Chat */}
       {!showChat && capsule.has_voice && (
         <div className='text-center'>
           <button

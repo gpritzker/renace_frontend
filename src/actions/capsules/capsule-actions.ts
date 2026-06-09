@@ -8,6 +8,10 @@ export const fetchCapsules = async (): Promise<ICapsule[]> => {
   return httpServer(ENDPOINTS.CAPSULES.LIST, { method: 'GET' })
 }
 
+export const fetchCapsule = async (id: number): Promise<ICapsule> => {
+  return httpServer(ENDPOINTS.CAPSULES.SHOW(id), { method: 'GET' })
+}
+
 export const createCapsule = async (payload: {
   title: string
   description: string
