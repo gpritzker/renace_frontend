@@ -18,10 +18,11 @@ import {
 import { toast } from 'sonner'
 import { updateProfile, type IUserProfile } from '@/actions/profile/profile-actions'
 import { Mail, Calendar, Phone, CreditCard, User, Pencil, X, Check } from 'lucide-react'
+import { useLanguage } from '@/contexts/LanguageContext'
 
 const FormSchema = z.object({
-  first_name: z.string().min(2, 'Ingresá tu nombre.'),
-  last_name: z.string().min(2, 'Ingresá tu apellido.'),
+  first_name: z.string().min(2),
+  last_name: z.string().min(2),
   dni: z.string().optional().or(z.literal('')),
   birth_date: z.string().optional().or(z.literal('')),
   phone: z.string().optional().or(z.literal('')),
@@ -44,6 +45,8 @@ function capitalize(s: string | null) {
 
 export const ProfileClient = ({ profile }: Props) => {
   const router = useRouter()
+  const { t } = useLanguage()
+  const p = t.profile
   const [isEditing, setIsEditing] = useState(false)
 
   const form = useForm<FormData>({
@@ -66,21 +69,20 @@ export const ProfileClient = ({ profile }: Props) => {
         birth_date: data.birth_date || undefined,
         phone: data.phone || undefined,
       })
-      toast.success('Perfil actualizado')
+      toast.success(p.updated)
       setIsEditing(false)
       router.refresh()
     } catch (e: any) {
-      toast.error(e.message || 'Error al guardar')
+      toast.error(e.message || 'Error')
     }
   }
 
   const initials = getInitials(profile.first_name, profile.last_name)
-  const fullName = [capitalize(profile.first_name), capitalize(profile.last_name)].filter(Boolean).join(' ') || 'Sin nombre'
+  const fullName = [capitalize(profile.first_name), capitalize(profile.last_name)].filter(Boolean).join(' ') || p.noName
 
   return (
     <div className='min-h-screen bg-gray-50'>
 
-      {/* Hero banner */}
       <div className='bg-gradient-to-br from-purple-600 via-purple-500 to-cyan-500 px-6 pt-12 pb-20'>
         <div className='max-w-2xl mx-auto flex flex-col items-center text-center gap-4'>
           <div className='w-24 h-24 rounded-full bg-white/20 border-4 border-white/40 backdrop-blur-sm flex items-center justify-center shadow-xl'>
@@ -95,18 +97,16 @@ export const ProfileClient = ({ profile }: Props) => {
           </div>
           <div className='flex items-center gap-2 text-xs text-purple-100 bg-white/10 border border-white/20 rounded-full px-4 py-1.5'>
             <Calendar className='w-3.5 h-3.5' />
-            Miembro desde {new Date(profile.created_at).toLocaleDateString('es-AR', { month: 'long', year: 'numeric' })}
+            {p.memberSince} {new Date(profile.created_at).toLocaleDateString(undefined, { month: 'long', year: 'numeric' })}
           </div>
         </div>
       </div>
 
-      {/* Card flotante */}
       <div className='max-w-2xl mx-auto px-4 -mt-10 pb-16'>
         <div className='bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden'>
 
-          {/* Header de la card */}
           <div className='flex items-center justify-between px-6 py-5 border-b border-gray-100'>
-            <h2 className='text-base font-semibold text-gray-800'>Datos personales</h2>
+            <h2 className='text-base font-semibold text-gray-800'>{p.personalData}</h2>
             {!isEditing ? (
               <Button
                 size='sm'
@@ -115,7 +115,7 @@ export const ProfileClient = ({ profile }: Props) => {
                 onClick={() => setIsEditing(true)}
               >
                 <Pencil className='w-3.5 h-3.5' />
-                Editar
+                {p.edit}
               </Button>
             ) : (
               <Button
@@ -125,90 +125,69 @@ export const ProfileClient = ({ profile }: Props) => {
                 onClick={() => { setIsEditing(false); form.reset() }}
               >
                 <X className='w-3.5 h-3.5' />
-                Cancelar
+                {p.cancel}
               </Button>
             )}
           </div>
 
-          {/* Contenido */}
           <div className='px-6 py-6'>
             {isEditing ? (
               <Form {...form}>
                 <form onSubmit={form.handleSubmit(handleSubmit)} className='space-y-5'>
                   <div className='grid grid-cols-1 sm:grid-cols-2 gap-4'>
-                    <FormField
-                      control={form.control}
-                      name='first_name'
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Nombre</FormLabel>
-                          <FormControl><Input {...field} /></FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={form.control}
-                      name='last_name'
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Apellido</FormLabel>
-                          <FormControl><Input {...field} /></FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={form.control}
-                      name='dni'
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>DNI</FormLabel>
-                          <FormControl><Input placeholder='12345678' {...field} /></FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={form.control}
-                      name='birth_date'
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Fecha de nacimiento</FormLabel>
-                          <FormControl><Input type='date' {...field} /></FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  </div>
-                  <FormField
-                    control={form.control}
-                    name='phone'
-                    render={({ field }) => (
+                    <FormField control={form.control} name='first_name' render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Teléfono</FormLabel>
-                        <FormControl><Input placeholder='+54 11 1234-5678' {...field} /></FormControl>
+                        <FormLabel>{p.firstName}</FormLabel>
+                        <FormControl><Input {...field} /></FormControl>
                         <FormMessage />
                       </FormItem>
-                    )}
-                  />
+                    )} />
+                    <FormField control={form.control} name='last_name' render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>{p.lastName}</FormLabel>
+                        <FormControl><Input {...field} /></FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )} />
+                    <FormField control={form.control} name='dni' render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>{t.auth.dni}</FormLabel>
+                        <FormControl><Input placeholder='12345678' {...field} /></FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )} />
+                    <FormField control={form.control} name='birth_date' render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>{p.birthDate}</FormLabel>
+                        <FormControl><Input type='date' {...field} /></FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )} />
+                  </div>
+                  <FormField control={form.control} name='phone' render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>{p.phone}</FormLabel>
+                      <FormControl><Input placeholder='+54 11 1234-5678' {...field} /></FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )} />
                   <Button
                     type='submit'
                     disabled={form.formState.isSubmitting}
                     className='w-full bg-gradient-to-r from-purple-600 to-cyan-500 text-white border-0 gap-2'
                   >
                     <Check className='w-4 h-4' />
-                    {form.formState.isSubmitting ? 'Guardando...' : 'Guardar cambios'}
+                    {form.formState.isSubmitting ? p.saving : p.save}
                   </Button>
                 </form>
               </Form>
             ) : (
               <div className='grid grid-cols-1 sm:grid-cols-2 gap-px bg-gray-100 rounded-xl overflow-hidden border border-gray-100'>
-                <InfoCell icon={<User className='w-4 h-4 text-purple-400' />} label='Nombre' value={capitalize(profile.first_name)} />
-                <InfoCell icon={<User className='w-4 h-4 text-purple-400' />} label='Apellido' value={capitalize(profile.last_name)} />
-                <InfoCell icon={<CreditCard className='w-4 h-4 text-cyan-500' />} label='DNI' value={profile.dni} />
-                <InfoCell icon={<Calendar className='w-4 h-4 text-amber-400' />} label='Nacimiento' value={profile.birth_date ? new Date(profile.birth_date + 'T12:00:00').toLocaleDateString('es-AR', { day: 'numeric', month: 'long', year: 'numeric' }) : null} />
-                <InfoCell icon={<Phone className='w-4 h-4 text-green-500' />} label='Teléfono' value={profile.phone} className='sm:col-span-2' />
+                <InfoCell icon={<User className='w-4 h-4 text-purple-400' />} label={p.firstName} value={capitalize(profile.first_name)} />
+                <InfoCell icon={<User className='w-4 h-4 text-purple-400' />} label={p.lastName} value={capitalize(profile.last_name)} />
+                <InfoCell icon={<CreditCard className='w-4 h-4 text-cyan-500' />} label={t.auth.dni} value={profile.dni} />
+                <InfoCell icon={<Calendar className='w-4 h-4 text-amber-400' />} label={p.birthDate} value={profile.birth_date ? new Date(profile.birth_date + 'T12:00:00').toLocaleDateString(undefined, { day: 'numeric', month: 'long', year: 'numeric' }) : null} />
+                <InfoCell icon={<Phone className='w-4 h-4 text-green-500' />} label={p.phone} value={profile.phone} className='sm:col-span-2' />
               </div>
             )}
           </div>

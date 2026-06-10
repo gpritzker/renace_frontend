@@ -17,40 +17,29 @@ import { Input } from '@/components/ui/input'
 import { signIn } from 'next-auth/react'
 import { useState } from 'react'
 import { ErrorAlert } from '@/components/error-alert/ErrorAlert'
+import { useLanguage } from '@/contexts/LanguageContext'
 
 const FormSchema = z.object({
-  email: z.string().email({
-    message: 'Ingrese un email váildo.'
-  }),
-  password: z.string().min(6, {
-    message: 'La contraseña debe tener al menos 6 caracteres'
-  })
+  email: z.string().email({ message: 'Email inválido.' }),
+  password: z.string().min(6, { message: 'Mínimo 6 caracteres.' })
 })
 
 type FormData = z.infer<typeof FormSchema>
 
 export default function LoginForm() {
   const router = useRouter()
+  const { t } = useLanguage()
   const [error, setError] = useState<string | null>(null)
   const form = useForm({
     resolver: zodResolver(FormSchema),
-    defaultValues: {
-      email: '',
-      password: ''
-    }
+    defaultValues: { email: '', password: '' }
   })
 
   const onSubmit = async (data: FormData): Promise<void> => {
     try {
-      const { email, password } = data
-      const res = await signIn('credentials', {
-        email,
-        password,
-        redirect: false
-      })
-
+      const res = await signIn('credentials', { email: data.email, password: data.password, redirect: false })
       if (!res?.ok) {
-        setError('El usuario o contraseña son incorrectos')
+        setError(t.auth.invalidCredentials)
         return
       }
       router.push('/')
@@ -71,16 +60,11 @@ export default function LoginForm() {
           name='email'
           render={({ field }) => (
             <FormItem className='w-full'>
-              <FormLabel>E-mail</FormLabel>
+              <FormLabel>{t.auth.email}</FormLabel>
               <FormControl>
-                <Input
-                  onFocus={() => setError(null)}
-                  className='text-black w-full'
-                  {...field}
-                  type='email'
-                />
+                <Input onFocus={() => setError(null)} className='text-black w-full' {...field} type='email' />
               </FormControl>
-              <FormMessage className={'animate-fade'} />
+              <FormMessage className='animate-fade' />
             </FormItem>
           )}
         />
@@ -89,16 +73,11 @@ export default function LoginForm() {
           name='password'
           render={({ field }) => (
             <FormItem className='w-full'>
-              <FormLabel>Password</FormLabel>
+              <FormLabel>{t.auth.password}</FormLabel>
               <FormControl>
-                <Input
-                  onFocus={() => setError(null)}
-                  className='text-black'
-                  {...field}
-                  type='password'
-                />
+                <Input onFocus={() => setError(null)} className='text-black' {...field} type='password' />
               </FormControl>
-              <FormMessage className={'animate-fade'} />
+              <FormMessage className='animate-fade' />
             </FormItem>
           )}
         />
@@ -108,9 +87,7 @@ export default function LoginForm() {
           className='hover:bg-purple-300 w-full cursor-pointer'
           disabled={form.formState.isSubmitting || !form.formState.isValid}
         >
-          {form.formState.isSubmitting
-            ? 'Iniciando sesión...'
-            : 'Iniciar sesión'}
+          {form.formState.isSubmitting ? t.auth.signingIn : t.auth.loginTitle}
         </Button>
       </form>
     </Form>

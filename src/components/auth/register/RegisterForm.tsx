@@ -17,16 +17,17 @@ import {
 } from '@/components/ui/form'
 import { ErrorAlert } from '@/components/error-alert/ErrorAlert'
 import { register } from '@/actions/auth/register'
+import { useLanguage } from '@/contexts/LanguageContext'
 
 const FormSchema = z
   .object({
-    firstName: z.string().min(2, { message: 'Ingresá tu nombre.' }),
-    lastName: z.string().min(2, { message: 'Ingresá tu apellido.' }),
+    firstName: z.string().min(2, { message: 'Mínimo 2 caracteres.' }),
+    lastName: z.string().min(2, { message: 'Mínimo 2 caracteres.' }),
     dni: z.string().min(7, { message: 'DNI inválido.' }).optional().or(z.literal('')),
     birthDate: z.string().optional().or(z.literal('')),
     phone: z.string().min(6, { message: 'Teléfono inválido.' }).optional().or(z.literal('')),
-    email: z.string().email({ message: 'Ingresá un email válido.' }),
-    password: z.string().min(6, { message: 'La contraseña debe tener al menos 6 caracteres.' }),
+    email: z.string().email({ message: 'Email inválido.' }),
+    password: z.string().min(6, { message: 'Mínimo 6 caracteres.' }),
     passwordConfirmation: z.string()
   })
   .refine((d) => d.password === d.passwordConfirmation, {
@@ -38,20 +39,15 @@ type FormData = z.infer<typeof FormSchema>
 
 export const RegisterForm = () => {
   const router = useRouter()
+  const { t } = useLanguage()
   const [error, setError] = useState<string | null>(null)
   const [success, setSuccess] = useState(false)
 
   const form = useForm<FormData>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
-      firstName: '',
-      lastName: '',
-      dni: '',
-      birthDate: '',
-      phone: '',
-      email: '',
-      password: '',
-      passwordConfirmation: ''
+      firstName: '', lastName: '', dni: '', birthDate: '', phone: '',
+      email: '', password: '', passwordConfirmation: ''
     }
   })
 
@@ -76,12 +72,10 @@ export const RegisterForm = () => {
   if (success) {
     return (
       <div className='text-center space-y-2'>
-        <p className='text-green-700 font-medium'>¡Cuenta creada!</p>
-        <p className='text-gray-600 text-sm'>
-          Revisá tu email para confirmar tu cuenta antes de iniciar sesión.
-        </p>
+        <p className='text-green-700 font-medium'>{t.auth.successTitle}</p>
+        <p className='text-gray-600 text-sm'>{t.auth.successSubtitle}</p>
         <Button variant='link' onClick={() => router.push('/login')}>
-          Ir al login
+          {t.auth.goToLogin}
         </Button>
       </div>
     )
@@ -99,7 +93,7 @@ export const RegisterForm = () => {
             name='firstName'
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Nombre *</FormLabel>
+                <FormLabel>{t.auth.firstName} *</FormLabel>
                 <FormControl>
                   <Input onFocus={() => setError(null)} placeholder='Juan' {...field} />
                 </FormControl>
@@ -112,7 +106,7 @@ export const RegisterForm = () => {
             name='lastName'
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Apellido *</FormLabel>
+                <FormLabel>{t.auth.lastName} *</FormLabel>
                 <FormControl>
                   <Input onFocus={() => setError(null)} placeholder='Pérez' {...field} />
                 </FormControl>
@@ -125,7 +119,7 @@ export const RegisterForm = () => {
             name='dni'
             render={({ field }) => (
               <FormItem>
-                <FormLabel>DNI</FormLabel>
+                <FormLabel>{t.auth.dni}</FormLabel>
                 <FormControl>
                   <Input onFocus={() => setError(null)} placeholder='12345678' {...field} />
                 </FormControl>
@@ -138,7 +132,7 @@ export const RegisterForm = () => {
             name='birthDate'
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Fecha de nacimiento</FormLabel>
+                <FormLabel>{t.auth.birthDate}</FormLabel>
                 <FormControl>
                   <Input onFocus={() => setError(null)} type='date' {...field} />
                 </FormControl>
@@ -153,7 +147,7 @@ export const RegisterForm = () => {
           name='phone'
           render={({ field }) => (
             <FormItem className='w-full'>
-              <FormLabel>Teléfono</FormLabel>
+              <FormLabel>{t.auth.phone}</FormLabel>
               <FormControl>
                 <Input onFocus={() => setError(null)} placeholder='+54 11 1234-5678' {...field} />
               </FormControl>
@@ -167,7 +161,7 @@ export const RegisterForm = () => {
           name='email'
           render={({ field }) => (
             <FormItem className='w-full'>
-              <FormLabel>E-mail *</FormLabel>
+              <FormLabel>{t.auth.email} *</FormLabel>
               <FormControl>
                 <Input onFocus={() => setError(null)} type='email' {...field} />
               </FormControl>
@@ -182,7 +176,7 @@ export const RegisterForm = () => {
             name='password'
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Contraseña *</FormLabel>
+                <FormLabel>{t.auth.password} *</FormLabel>
                 <FormControl>
                   <Input onFocus={() => setError(null)} type='password' {...field} />
                 </FormControl>
@@ -195,7 +189,7 @@ export const RegisterForm = () => {
             name='passwordConfirmation'
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Confirmar contraseña *</FormLabel>
+                <FormLabel>{t.auth.confirmPassword} *</FormLabel>
                 <FormControl>
                   <Input onFocus={() => setError(null)} type='password' {...field} />
                 </FormControl>
@@ -211,7 +205,7 @@ export const RegisterForm = () => {
           className='hover:bg-purple-300 w-full cursor-pointer'
           disabled={form.formState.isSubmitting}
         >
-          {form.formState.isSubmitting ? 'Registrando...' : 'Crear cuenta'}
+          {form.formState.isSubmitting ? t.auth.registering : t.auth.registerSubmit}
         </Button>
       </form>
     </Form>

@@ -1,8 +1,9 @@
 import { SidebarMenu } from '@/components/header/sidebarMenu/SibebarMenu'
 import { SessionNav } from '@/components/auth/SessionNav'
+import { LanguageToggle } from '@/components/header/LanguageToggle'
 import Link from 'next/link'
 
-export const Navtop = async () => {
+export const Navtop = () => {
   return (
     <div className='flex justify-between items-center py-3 px-4'>
       <SidebarMenu />
@@ -16,7 +17,8 @@ export const Navtop = async () => {
           Renace
         </span>
       </Link>
-      <div className='flex space-x-3'>
+      <div className='flex items-center gap-1'>
+        <LanguageToggle />
         <SessionNav />
       </div>
     </div>

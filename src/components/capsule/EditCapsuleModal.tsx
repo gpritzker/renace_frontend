@@ -15,6 +15,7 @@ import {
 import { toast } from 'sonner'
 import { updateCapsule } from '@/actions/capsules/capsule-actions'
 import type { ICapsule } from '@/interface/ICapsule'
+import { useLanguage } from '@/contexts/LanguageContext'
 
 interface Props {
   capsule: ICapsule
@@ -24,6 +25,8 @@ interface Props {
 }
 
 export const EditCapsuleModal = ({ capsule, open, onClose, onSaved }: Props) => {
+  const { t } = useLanguage()
+  const c = t.capsule
   const [title, setTitle] = useState(capsule.title)
   const [description, setDescription] = useState(capsule.description)
   const [openAt, setOpenAt] = useState(
@@ -33,21 +36,17 @@ export const EditCapsuleModal = ({ capsule, open, onClose, onSaved }: Props) => 
 
   const handleSave = async () => {
     if (!title.trim() || !description.trim()) {
-      toast.error('Título y descripción son obligatorios')
+      toast.error(`${c.titleLabel} y ${c.descriptionLabel.toLowerCase()} son obligatorios`)
       return
     }
     setIsSaving(true)
     try {
-      const updated = await updateCapsule(capsule.id, {
-        title,
-        description,
-        open_at: openAt || null
-      })
-      toast.success('Cápsula actualizada')
+      const updated = await updateCapsule(capsule.id, { title, description, open_at: openAt || null })
+      toast.success(c.saved)
       onSaved(updated)
       onClose()
     } catch (e: any) {
-      toast.error(e.message || 'Error al guardar')
+      toast.error(e.message || 'Error')
     } finally {
       setIsSaving(false)
     }
@@ -57,37 +56,35 @@ export const EditCapsuleModal = ({ capsule, open, onClose, onSaved }: Props) => 
     <Dialog open={open} onOpenChange={(v) => !v && onClose()}>
       <DialogContent className='max-w-2xl max-h-[90vh] overflow-y-auto'>
         <DialogHeader>
-          <DialogTitle>Editar cápsula</DialogTitle>
+          <DialogTitle>{c.editTitle}</DialogTitle>
         </DialogHeader>
 
         <div className='space-y-5 py-2'>
           <div>
-            <Label className='font-semibold'>Título</Label>
+            <Label className='font-semibold'>{c.titleLabel}</Label>
             <Input
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               className='mt-1.5'
-              placeholder='Título de la cápsula'
+              placeholder={c.titlePlaceholder}
             />
           </div>
 
           <div>
-            <Label className='font-semibold'>Descripción / Relato</Label>
-            <p className='text-xs text-gray-500 mt-0.5 mb-1.5'>
-              Este texto se leerá con tu voz en ElevenLabs. Escribí con naturalidad, como si lo contaras en voz alta.
-            </p>
+            <Label className='font-semibold'>{c.editDescLabel}</Label>
+            <p className='text-xs text-gray-500 mt-0.5 mb-1.5'>{c.editDescHint}</p>
             <Textarea
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               className='mt-1 min-h-[280px] font-mono text-sm leading-relaxed'
-              placeholder='Escribí el relato...'
+              placeholder={c.editDescPlaceholder}
             />
-            <p className='text-xs text-gray-400 mt-1 text-right'>{description.length} caracteres</p>
+            <p className='text-xs text-gray-400 mt-1 text-right'>{description.length} {c.characters}</p>
           </div>
 
           <div>
             <Label className='font-semibold'>
-              Fecha de apertura <span className='text-gray-400 font-normal'>(opcional)</span>
+              {c.openAt} <span className='text-gray-400 font-normal'>({c.optional})</span>
             </Label>
             <Input
               type='datetime-local'
@@ -100,10 +97,10 @@ export const EditCapsuleModal = ({ capsule, open, onClose, onSaved }: Props) => 
 
         <DialogFooter className='gap-2'>
           <Button variant='outline' onClick={onClose} disabled={isSaving}>
-            Cancelar
+            {c.cancel}
           </Button>
           <Button onClick={handleSave} disabled={isSaving} className='bg-purple-500 hover:bg-purple-600'>
-            {isSaving ? 'Guardando...' : 'Guardar cambios'}
+            {isSaving ? c.saving : c.saveChanges}
           </Button>
         </DialogFooter>
       </DialogContent>

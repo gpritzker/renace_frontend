@@ -14,16 +14,18 @@ import { Button } from '@/components/ui/button'
 import Link from 'next/link'
 import { useSession, signOut } from 'next-auth/react'
 import { notifyBackendLogout } from '@/actions/auth/login'
-
-const accountRoutes = [
-  { link: '/my-capsules', title: 'Mis Cápsulas' },
-  { link: '/my-voice', title: 'Mi Voz' },
-  { link: '/my-profile', title: 'Mi Perfil' },
-]
+import { useLanguage } from '@/contexts/LanguageContext'
 
 export const SessionNav = () => {
   const { data: session } = useSession()
+  const { t } = useLanguage()
   const isLoggedIn = !!session
+
+  const accountRoutes = [
+    { link: '/my-capsules', title: t.nav.myCapsules },
+    { link: '/my-voice', title: t.nav.myVoice },
+    { link: '/my-profile', title: t.nav.myProfile },
+  ]
 
   const handleLogout = async () => {
     await notifyBackendLogout()
@@ -35,14 +37,14 @@ export const SessionNav = () => {
       <Button className='hidden md:flex' variant='ghost' type='button' asChild>
         <Link href='/how-it-works'>
           <Settings className='size-6' />
-          Cómo funciona
+          {t.nav.howItWorks}
         </Link>
       </Button>
 
       <Button className='hidden md:flex' variant='ghost' type='button' asChild>
         <Link href='/pricing'>
           <Crown className='size-5' />
-          Planes
+          {t.nav.plans}
         </Link>
       </Button>
 
@@ -51,7 +53,7 @@ export const SessionNav = () => {
           <Button className='hidden md:flex' variant='ghost' type='button' asChild>
             <Link href='/create-capsule'>
               <Pill className='size-6' />
-              Crear cápsula
+              {t.nav.createCapsule}
             </Link>
           </Button>
           <DropdownMenu>
@@ -77,12 +79,9 @@ export const SessionNav = () => {
                 ))}
               </DropdownMenuGroup>
               <DropdownMenuSeparator />
-              <DropdownMenuItem
-                onClick={handleLogout}
-                className='cursor-pointer hover:bg-gray-100!'
-              >
+              <DropdownMenuItem onClick={handleLogout} className='cursor-pointer hover:bg-gray-100!'>
                 <LogOut />
-                <span>Salir</span>
+                <span>{t.nav.logout}</span>
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
@@ -92,13 +91,13 @@ export const SessionNav = () => {
           <Button className='hidden md:flex' variant='ghost' type='button' asChild>
             <Link href='/login'>
               <FiUser className='size-6' />
-              Iniciar sesión
+              {t.nav.login}
             </Link>
           </Button>
           <Button className='hidden md:flex' variant='ghost' type='button' asChild>
             <Link href='/register'>
               <KeyRound className='size-6' />
-              Registro
+              {t.nav.register}
             </Link>
           </Button>
         </>

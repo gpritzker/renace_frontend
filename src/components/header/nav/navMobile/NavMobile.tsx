@@ -8,6 +8,7 @@ import { Separator } from '@/components/ui/separator'
 import { Settings, LogOut } from 'lucide-react'
 import { signOut } from 'next-auth/react'
 import { notifyBackendLogout } from '@/actions/auth/login'
+import { useLanguage } from '@/contexts/LanguageContext'
 
 interface Props {
   menu: any[]
@@ -21,6 +22,7 @@ const levelStyles: string[] = [
 ]
 
 export const NavMobile = ({ menu, isLoggedIn }: Props) => {
+  const { t } = useLanguage()
   const hasChilds = (childs: any[]) => childs.length > 0
 
   const handleLogout = async () => {
@@ -73,7 +75,7 @@ export const NavMobile = ({ menu, isLoggedIn }: Props) => {
               className='w-full text-left flex items-center text-red-500 uppercase text-sm font-medium py-2 hover:text-red-600 transition-colors'
             >
               <LogOut className='size-6 mr-2.5' />
-              Cerrar sesión
+              {t.nav.closeSession}
             </button>
           </div>
         )}
