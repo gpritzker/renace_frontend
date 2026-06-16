@@ -5,19 +5,21 @@ import { getToken } from 'next-auth/jwt'
 const PROTECTED_ROUTES = ['/account', '/my-capsules', '/create-capsule', '/my-voice']
 
 export async function middleware(request: NextRequest) {
-  try {
-    const token = await getToken({
-      req: request,
-      secret: process.env.NEXTAUTH_SECRET
-    })
-    const isProtected = PROTECTED_ROUTES.some((route) =>
-      request.nextUrl.pathname.startsWith(route)
-    )
-    if (!token && isProtected) {
-      return NextResponse.redirect(new URL('/login', request.url))
-    }
-  } catch {
-    // Si NEXTAUTH_SECRET no está, dejamos pasar — el server action fallará con 401
+  const isProtected = PROTECTED_ROUTES.some((route) =>
+    request.nextUrl.pathname.startsWith(route)
+  )
+
+  if (!isProtected) return NextResponse.next()
+
+  const token = await getToken({
+    req: request,
+    secret: process.env.NEXTAUTH_SECRET
+  })
+
+  if (!token) {
+    const loginUrl = new URL('/login', request.url)
+    loginUrl.searchParams.set('callbackUrl', request.nextUrl.pathname)
+    return NextResponse.redirect(loginUrl)
   }
 
   return NextResponse.next()

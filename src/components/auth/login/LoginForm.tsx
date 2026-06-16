@@ -15,13 +15,15 @@ import {
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { signIn } from 'next-auth/react'
-import { useState } from 'react'
+import { useState, useCallback } from 'react'
 import { ErrorAlert } from '@/components/error-alert/ErrorAlert'
 import { useLanguage } from '@/contexts/LanguageContext'
+import { useGoogleReCaptcha } from 'react-google-recaptcha-v3'
+import { verifyRecaptcha } from '@/actions/auth/verifyRecaptcha'
 
 const FormSchema = z.object({
   email: z.string().email({ message: 'Email inválido.' }),
-  password: z.string().min(6, { message: 'Mínimo 6 caracteres.' })
+  password: z.string().min(10, { message: 'Mínimo 10 caracteres.' })
 })
 
 type FormData = z.infer<typeof FormSchema>
@@ -30,24 +32,40 @@ export default function LoginForm() {
   const router = useRouter()
   const { t } = useLanguage()
   const [error, setError] = useState<string | null>(null)
+  const { executeRecaptcha } = useGoogleReCaptcha()
+
   const form = useForm({
     resolver: zodResolver(FormSchema),
     defaultValues: { email: '', password: '' }
   })
 
-  const onSubmit = async (data: FormData): Promise<void> => {
-    try {
-      const res = await signIn('credentials', { email: data.email, password: data.password, redirect: false })
-      if (!res?.ok) {
-        setError(t.auth.invalidCredentials)
+  const onSubmit = useCallback(async (data: FormData): Promise<void> => {
+    setError(null)
+
+    // Verificar reCAPTCHA antes de enviar credenciales
+    if (executeRecaptcha) {
+      const token = await executeRecaptcha('login')
+      const result = await verifyRecaptcha(token, 'login')
+      if (!result.success) {
+        setError(result.error ?? 'Verificación de seguridad fallida')
         return
       }
-      router.push('/')
-      router.refresh()
-    } catch (e) {
-      console.log(e)
     }
-  }
+
+    const res = await signIn('credentials', {
+      email: data.email,
+      password: data.password,
+      redirect: false
+    })
+
+    if (!res?.ok) {
+      setError(t.auth.invalidCredentials)
+      return
+    }
+
+    router.push('/')
+    router.refresh()
+  }, [executeRecaptcha, router, t])
 
   return (
     <Form {...form}>

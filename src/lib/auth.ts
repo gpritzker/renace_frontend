@@ -1,6 +1,14 @@
 import type { AuthOptions } from 'next-auth'
 import CredentialsProvider from 'next-auth/providers/credentials'
 
+if (!process.env.BASE_URL) {
+  throw new Error('BASE_URL env var is required')
+}
+
+if (!process.env.NEXTAUTH_SECRET) {
+  throw new Error('NEXTAUTH_SECRET env var is required')
+}
+
 export const authOptions: AuthOptions = {
   providers: [
     CredentialsProvider({
@@ -10,8 +18,6 @@ export const authOptions: AuthOptions = {
       },
       async authorize(credentials) {
         const loginUrl = `${process.env.BASE_URL}/login`
-        console.log('[AUTH] BASE_URL:', process.env.BASE_URL)
-        console.log('[AUTH] Login URL:', loginUrl)
         try {
           const res = await fetch(loginUrl, {
             method: 'POST',
@@ -20,17 +26,12 @@ export const authOptions: AuthOptions = {
               user: { email: credentials?.email, password: credentials?.password }
             })
           })
-          console.log('[AUTH] Response status:', res.status)
           const data = await res.json()
-          console.log('[AUTH] Response keys:', Object.keys(data))
-          console.log('[AUTH] Has token:', !!data.token, '| res.ok:', res.ok)
           if (res.ok && data.token) {
             return { id: String(data.data.id), email: data.data.email, accessToken: data.token }
           }
-          console.error('[AUTH] Login failed - data:', JSON.stringify(data))
           return null
-        } catch (e) {
-          console.error('[AUTH] Exception:', e)
+        } catch {
           return null
         }
       }
@@ -38,7 +39,7 @@ export const authOptions: AuthOptions = {
   ],
   callbacks: {
     jwt({ token, user }) {
-      if (user) token.accessToken = (user as any).accessToken
+      if (user) token.accessToken = (user as { accessToken?: string }).accessToken
       return token
     },
     session({ session, token }) {
@@ -48,5 +49,9 @@ export const authOptions: AuthOptions = {
   },
   pages: {
     signIn: '/login'
+  },
+  session: {
+    strategy: 'jwt',
+    maxAge: 24 * 60 * 60  // 24h — mismo TTL que el JWT de Rails
   }
 }

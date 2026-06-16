@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useCallback } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import * as z from 'zod'
@@ -18,6 +18,8 @@ import {
 import { ErrorAlert } from '@/components/error-alert/ErrorAlert'
 import { register } from '@/actions/auth/register'
 import { useLanguage } from '@/contexts/LanguageContext'
+import { useGoogleReCaptcha } from 'react-google-recaptcha-v3'
+import { verifyRecaptcha } from '@/actions/auth/verifyRecaptcha'
 
 const FormSchema = z
   .object({
@@ -27,7 +29,7 @@ const FormSchema = z
     birthDate: z.string().optional().or(z.literal('')),
     phone: z.string().min(6, { message: 'Teléfono inválido.' }).optional().or(z.literal('')),
     email: z.string().email({ message: 'Email inválido.' }),
-    password: z.string().min(6, { message: 'Mínimo 6 caracteres.' }),
+    password: z.string().min(10, { message: 'Mínimo 10 caracteres.' }),
     passwordConfirmation: z.string()
   })
   .refine((d) => d.password === d.passwordConfirmation, {
@@ -42,6 +44,7 @@ export const RegisterForm = () => {
   const { t } = useLanguage()
   const [error, setError] = useState<string | null>(null)
   const [success, setSuccess] = useState(false)
+  const { executeRecaptcha } = useGoogleReCaptcha()
 
   const form = useForm<FormData>({
     resolver: zodResolver(FormSchema),
@@ -51,7 +54,19 @@ export const RegisterForm = () => {
     }
   })
 
-  const handleSubmit = async (data: FormData) => {
+  const handleSubmit = useCallback(async (data: FormData) => {
+    setError(null)
+
+    // Verificar reCAPTCHA antes de crear la cuenta
+    if (executeRecaptcha) {
+      const token = await executeRecaptcha('register')
+      const result = await verifyRecaptcha(token, 'register')
+      if (!result.success) {
+        setError(result.error ?? 'Verificación de seguridad fallida')
+        return
+      }
+    }
+
     try {
       await register({
         email: data.email,
@@ -64,10 +79,10 @@ export const RegisterForm = () => {
         phone: data.phone || undefined,
       })
       setSuccess(true)
-    } catch (e: any) {
-      setError(e.message || 'Error al registrarse')
+    } catch (e: unknown) {
+      setError(e instanceof Error ? e.message : 'Error al registrarse')
     }
-  }
+  }, [executeRecaptcha])
 
   if (success) {
     return (
